@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "azarus-audit"
+version = "0.1.0"
+description = "Auditeur de securite open-source : scanner de vulnerabilites CWE, deterministe, auto-hebergeable."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Torqueau Mathis" }]
+keywords = ["security", "sast", "cwe", "vulnerability", "scanner", "audit", "sarif"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+]
+dependencies = []
+
+[project.optional-dependencies]
+# Le coeur (scan / benchmark / rapport JSON / SARIF / Markdown) est en stdlib pure.
+tui = ["rich>=13.0.0", "prompt_toolkit>=3.0.0"]
+
+[project.scripts]
+azarus-audit = "azarus_audit.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/kymrapro-del/azarus-audit"
+Repository = "https://github.com/kymrapro-del/azarus-audit"
+Issues = "https://github.com/kymrapro-del/azarus-audit/issues"
+
+[tool.setuptools.packages.find]
+include = ["azarus_audit*"]

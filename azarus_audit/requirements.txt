@@ -1,0 +1,5 @@
+# Le coeur (scan/benchmark/cli/rapport JSON) n'a AUCUNE dependance (stdlib seule).
+# 'rich' est requis pour le tableau de bord live 'dashboard'.
+# 'prompt_toolkit' est requis pour la console interactive 'console'.
+rich>=13.0.0
+prompt_toolkit>=3.0.0

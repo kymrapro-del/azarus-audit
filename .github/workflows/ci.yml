@@ -1,0 +1,40 @@
+name: ci
+
+# Intégration continue : lint, tests, et auto-scan (le scanner s'audite lui-même).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Lint, tests et auto-scan
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Installer Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Installer les outils de dev
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          pip install .
+
+      - name: Lint (syntaxe et noms indéfinis)
+        run: flake8 azarus_audit --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Tests unitaires
+        run: pytest tests/test_azarus_audit.py -q
+
+      - name: Auto-scan (le scanner s'audite lui-même)
+        run: python -m azarus_audit scan azarus_audit --fail-on high
