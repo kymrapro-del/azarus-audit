@@ -1,0 +1,286 @@
+{
+  "summary": {
+    "cases": 24,
+    "exact_case_match": 24,
+    "cwe_true_positives": 14,
+    "cwe_false_positives": 0,
+    "cwe_false_negatives": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "rows": [
+    {
+      "id": "sqli_concat",
+      "expected": [
+        "CWE-89"
+      ],
+      "detected": [
+        "CWE-89"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "sqli_fstring",
+      "expected": [
+        "CWE-89"
+      ],
+      "detected": [
+        "CWE-89"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "sqli_percent",
+      "expected": [
+        "CWE-89"
+      ],
+      "detected": [
+        "CWE-89"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "sqli_safe_param",
+      "expected": [],
+      "detected": [],
+      "ok": true,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "sqli_safe_const",
+      "expected": [],
+      "detected": [],
+      "ok": true,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "cmd_os_system",
+      "expected": [
+        "CWE-78"
+      ],
+      "detected": [
+        "CWE-78"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "cmd_shell_true",
+      "expected": [
+        "CWE-78"
+      ],
+      "detected": [
+        "CWE-78"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "cmd_safe_list",
+      "expected": [],
+      "detected": [],
+      "ok": true,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "code_eval",
+      "expected": [
+        "CWE-94"
+      ],
+      "detected": [
+        "CWE-94"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "code_exec",
+      "expected": [
+        "CWE-94"
+      ],
+      "detected": [
+        "CWE-94"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "code_safe_literal",
+      "expected": [],
+      "detected": [],
+      "ok": true,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "deser_pickle",
+      "expected": [
+        "CWE-502"
+      ],
+      "detected": [
+        "CWE-502"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "deser_yaml",
+      "expected": [
+        "CWE-502"
+      ],
+      "detected": [
+        "CWE-502"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "deser_safe_json",
+      "expected": [],
+      "detected": [],
+      "ok": true,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "deser_safe_yaml",
+      "expected": [],
+      "detected": [],
+      "ok": true,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "hash_md5",
+      "expected": [
+        "CWE-327"
+      ],
+      "detected": [
+        "CWE-327"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "hash_safe_sha256",
+      "expected": [],
+      "detected": [],
+      "ok": true,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "tls_verify_false",
+      "expected": [
+        "CWE-295"
+      ],
+      "detected": [
+        "CWE-295"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "tls_safe",
+      "expected": [],
+      "detected": [],
+      "ok": true,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "secret_password",
+      "expected": [
+        "CWE-798"
+      ],
+      "detected": [
+        "CWE-798"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "secret_apikey_literal",
+      "expected": [
+        "CWE-798"
+      ],
+      "detected": [
+        "CWE-798"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "secret_env_safe",
+      "expected": [],
+      "detected": [],
+      "ok": true,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "secret_hf_token_yaml",
+      "expected": [
+        "CWE-798"
+      ],
+      "detected": [
+        "CWE-798"
+      ],
+      "ok": true,
+      "tp": 1,
+      "fp": 0,
+      "fn": 0
+    },
+    {
+      "id": "secret_env_ref_safe",
+      "expected": [],
+      "detected": [],
+      "ok": true,
+      "tp": 0,
+      "fp": 0,
+      "fn": 0
+    }
+  ]
+}

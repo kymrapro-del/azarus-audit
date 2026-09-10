@@ -1,0 +1,67 @@
+name: "azarus-audit"
+description: "Scanner de sécurité open-source : détecte les vulnérabilités (CWE) et exporte en SARIF pour GitHub code scanning."
+author: "Séverine Kornafel"
+branding:
+  icon: "shield"
+  color: "green"
+
+inputs:
+  path:
+    description: "Fichier ou dossier à auditer."
+    required: false
+    default: "."
+  fail-on:
+    description: "Sévérité minimale qui fait échouer l'action : critical | high | medium | low | never."
+    required: false
+    default: "never"
+  sarif-file:
+    description: "Chemin du rapport SARIF 2.1.0 produit."
+    required: false
+    default: "azarus-audit.sarif"
+  markdown-file:
+    description: "Chemin du rapport Markdown produit (résumé lisible)."
+    required: false
+    default: "azarus-audit.md"
+  python-version:
+    description: "Version de Python utilisée pour lancer le scanner."
+    required: false
+    default: "3.11"
+
+outputs:
+  sarif-file:
+    description: "Chemin du rapport SARIF généré."
+    value: ${{ inputs.sarif-file }}
+  markdown-file:
+    description: "Chemin du rapport Markdown généré."
+    value: ${{ inputs.markdown-file }}
+  exit-code:
+    description: "Code de sortie du scanner (0 = OK selon --fail-on, 1 = seuil atteint)."
+    value: ${{ steps.scan.outputs.exit-code }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Installer Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Installer azarus-audit
+      shell: bash
+      run: pip install --quiet "${{ github.action_path }}"
+
+    - name: Scanner le code
+      id: scan
+      shell: bash
+      run: |
+        set +e
+        azarus-audit scan "${{ inputs.path }}" \
+          --sarif "${{ inputs.sarif-file }}" \
+          --markdown "${{ inputs.markdown-file }}" \
+          --fail-on "${{ inputs.fail-on }}"
+        code=$?
+        set -e
+        echo "exit-code=$code" >> "$GITHUB_OUTPUT"
+        # Résumé visible dans l'onglet Actions.
+        cat "${{ inputs.markdown-file }}" >> "$GITHUB_STEP_SUMMARY"
+        exit $code
