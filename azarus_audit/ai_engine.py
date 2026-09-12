@@ -12,9 +12,11 @@ import json
 import os
 import re
 import urllib.request
-from typing import List
+from typing import List, Optional
 
 from .detectors import Finding
+from .experts import ExpertConfig, load_config
+from .router import route_for_file
 
 _BASE_URL = os.environ.get("AZARUS_BASE_URL", "https://kyky34167--azarus-final-serve-serve.modal.run/v1")
 _MODEL = os.environ.get("AZARUS_MODEL", "azarus")
@@ -46,25 +48,36 @@ def _extract_json_array(text: str):
         return []
 
 
-def _call_model(prompt, base_url, model, max_tokens=900, timeout=180):
+def _call_model(prompt, base_url, model, api_key=_KEY, max_tokens=900, timeout=180):
     body = {"model": model, "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.1, "max_tokens": max_tokens}
     req = urllib.request.Request(base_url.rstrip("/") + "/chat/completions",
                                  data=json.dumps(body).encode(),
                                  headers={"Content-Type": "application/json",
-                                          "Authorization": f"Bearer {_KEY}"})
+                                          "Authorization": f"Bearer {api_key}"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
         data = json.load(r)
     msg = data["choices"][0]["message"]
     return msg.get("content") or ""
 
 
-def ai_scan_source(code: str, base_url: str = _BASE_URL, model: str = _MODEL,
-                   max_lines: int = 400) -> List[Finding]:
-    """Analyse un extrait via le modele. Renvoie des Finding (source='ai')."""
+def ai_scan_source(code: str, base_url: Optional[str] = None,
+                   model: Optional[str] = None, max_lines: int = 400,
+                   config: Optional[ExpertConfig] = None,
+                   path: str = "") -> List[Finding]:
+    """Analyse un extrait via le modele expert. Renvoie des Finding (source='ai').
+
+    Le modele est choisi par le routeur (route_for_file) selon la nature du code,
+    sauf si `model` est fourni explicitement. `base_url`/cle proviennent de la
+    config d'experts si non passes. Comportement inchange en mono-modele.
+    """
+    cfg = config or load_config()
     code = "\n".join(code.splitlines()[:max_lines])
+    chosen_url = base_url or cfg.base_url
+    chosen_model = model or route_for_file(path, code, cfg)
     try:
-        raw = _call_model(_PROMPT.replace("{code}", code), base_url, model)
+        raw = _call_model(_PROMPT.replace("{code}", code), chosen_url,
+                          chosen_model, api_key=cfg.api_key)
     except Exception:
         return []
     out = []

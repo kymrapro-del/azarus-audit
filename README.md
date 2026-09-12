@@ -104,12 +104,37 @@ composants tiers de ton projet.
 - **Benchmark interne étiqueté** : 24/24 détectés, 0 faux positif.
 - **Dataset public réel** (Hugging Face, code Python) : ~75 % de détection.
 - **Code mature audité** (Flask, Jinja2, Werkzeug) : faux positifs quasi nuls.
-- **33 tests** unitaires, CI dédiée, auto-scan (le scanner s'audite lui-même).
+- **47 tests** unitaires, CI dédiée, auto-scan (le scanner s'audite lui-même).
 
 ```bash
 python -m azarus_audit.benchmark.run            # benchmark interne (24/24)
 python -m azarus_audit.benchmark.external       # dataset public réel
 ```
+
+## Experts IA (routage multi-adaptateurs)
+
+L'IA optionnelle (`--ai`, `--triage`) peut router chaque tâche vers un **expert**
+spécialisé plutôt que vers un modèle unique. Le principe : un seul modèle de base
+sert plusieurs adaptateurs **LoRA** (exposés par vLLM sous des noms distincts), et
+azarus-audit choisit le bon selon le contexte :
+
+- **triage d'un finding** → routage par **CWE** (ex : `CWE-327/295/798/330` →
+  expert *crypto* ; `CWE-89/78/94/502/611/918/22` → expert *code* ;
+  `CWE-489/377/732` → expert *config*) ;
+- **découverte `--ai`** → routage par **nature du fichier** (code applicatif
+  LLM/agent → expert *llm-sec*, sinon expert *code*).
+
+Configuration via un fichier JSON (voir [`experts.example.json`](experts.example.json)) :
+
+```bash
+azarus-audit scan mon_projet/ --ai --triage --experts-config experts.json
+azarus-audit scan mon_projet/ --ai --expert expert-crypto   # forcer un expert
+```
+
+Les noms sous `experts` doivent correspondre aux `served-model-name` exposés par
+le serveur d'inférence. **Rétro-compatible** : sans configuration, toutes les
+familles retombent sur un modèle unique (`AZARUS_MODEL`), comportement identique à
+l'existant. Le routage est **déterministe et testé hors ligne** (`router.py`).
 
 ## Intégration continue
 
