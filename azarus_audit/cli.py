@@ -64,6 +64,12 @@ def main(argv=None):
                         help="Ajouter une explication du modele Azarus (necessite l'endpoint).")
     p_scan.add_argument("--ai", action="store_true",
                         help="Moteur IA : le modele cherche aussi des failles (findings marques IA).")
+    p_scan.add_argument("--experts-config", metavar="FICHIER",
+                        help="Config JSON des experts IA (routage multi-adaptateurs). "
+                             "A defaut, variable AZARUS_EXPERTS puis modele unique.")
+    p_scan.add_argument("--expert", metavar="NOM",
+                        help="Forcer un expert (nom de modele servi) pour --ai et --triage, "
+                             "en court-circuitant le routage automatique.")
     p_scan.add_argument("--fail-on", default="low",
                         choices=["critical", "high", "medium", "low", "never"],
                         help="Severite minimale qui fait echouer la commande (defaut: low).")
@@ -133,6 +139,13 @@ def main(argv=None):
     print()
     results = scan_path(args.path)
 
+    expert_cfg = None
+    if args.ai or args.triage:
+        from .experts import load_config
+        expert_cfg = load_config(args.experts_config)
+        if expert_cfg.is_multi_expert() and not args.expert:
+            print(f"Experts IA actifs : {', '.join(sorted(expert_cfg.models))}")
+
     if args.ai:
         from .ai_engine import ai_scan_source
         from .scanner import iter_files
@@ -142,7 +155,8 @@ def main(argv=None):
                 code = open(path, encoding="utf-8", errors="ignore").read()
             except OSError:
                 continue
-            ai_findings = ai_scan_source(code)
+            ai_findings = ai_scan_source(code, model=args.expert,
+                                         config=expert_cfg, path=path)
             if ai_findings:
                 results.setdefault(path, []).extend(ai_findings)
 
@@ -155,7 +169,7 @@ def main(argv=None):
             except OSError:
                 ctx = ""
             for f in findings:
-                note = explain(f, ctx)
+                note = explain(f, ctx, model=args.expert, config=expert_cfg)
                 if note:
                     triaged[(path, f.line, f.cwe)] = note
 

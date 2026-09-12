@@ -12,6 +12,8 @@ import urllib.error
 from typing import Optional
 
 from .detectors import Finding
+from .experts import ExpertConfig, load_config
+from .router import route_for_cwe
 
 _DEFAULT_URL = os.environ.get(
     "AZARUS_BASE_URL", "https://kyky34167--azarus-final-serve-serve.modal.run/v1")
@@ -20,9 +22,16 @@ _KEY = os.environ.get("AZARUS_API_KEY", "none")
 
 
 def explain(finding: Finding, code_context: str,
-            base_url: str = _DEFAULT_URL, model: str = _MODEL,
-            timeout: int = 120) -> Optional[str]:
-    """Renvoie une explication courte du finding, ou None si indisponible."""
+            base_url: Optional[str] = None, model: Optional[str] = None,
+            timeout: int = 120, config: Optional[ExpertConfig] = None) -> Optional[str]:
+    """Renvoie une explication courte du finding, ou None si indisponible.
+
+    L'expert est choisi selon le CWE du finding (route_for_cwe), sauf si `model`
+    est fourni explicitement. Comportement inchange en mono-modele.
+    """
+    cfg = config or load_config()
+    chosen_url = base_url or cfg.base_url
+    chosen_model = model or route_for_cwe(finding.cwe, cfg)
     prompt = (
         "Tu es un auditeur de securite. Voici un finding statique et le code.\n"
         f"CWE: {finding.cwe} ({finding.name})\n"
@@ -32,15 +41,16 @@ def explain(finding: Finding, code_context: str,
         "Si c'est probablement un faux positif, dis-le."
     )
     body = {
-        "model": model,
+        "model": chosen_model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.2,
         "max_tokens": 200,
     }
     req = urllib.request.Request(
-        base_url.rstrip("/") + "/chat/completions",
+        chosen_url.rstrip("/") + "/chat/completions",
         data=json.dumps(body).encode(),
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {_KEY}"},
+        headers={"Content-Type": "application/json",
+                 "Authorization": f"Bearer {cfg.api_key}"},
     )
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:

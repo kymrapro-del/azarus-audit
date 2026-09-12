@@ -1,0 +1,12 @@
+{
+  "_comment": "Config des experts IA (routage multi-adaptateurs LoRA sur un seul modele de base). Copier en experts.json et adapter, ou pointer via --experts-config / la variable AZARUS_EXPERTS. Les noms sous 'experts' doivent correspondre aux served-model-name exposes par vLLM (--lora-modules).",
+  "base_url": "https://kyky34167--azarus-final-serve-serve.modal.run/v1",
+  "api_key": "none",
+  "default_model": "azarus",
+  "experts": {
+    "code": "expert-code",
+    "crypto": "expert-crypto",
+    "config": "expert-config",
+    "llm-sec": "expert-llm-sec"
+  }
+}
